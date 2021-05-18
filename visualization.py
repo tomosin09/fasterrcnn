@@ -6,6 +6,7 @@ import torch
 from dataset import CatDogsDataset
 from torch.utils.data import DataLoader, Dataset
 from matplotlib import pyplot as plt
+import argparse
 
 
 def collate_fn(batch):
@@ -13,19 +14,25 @@ def collate_fn(batch):
 
 
 if __name__ == '__main__':
-    train_path = r'C:\Users\Andrey Ilyin\Desktop\fasterrcnn\train'
-    valid_path = r'C:\Users\Andrey Ilyin\Desktop\fasterrcnn\valid'
+    parser = argparse.ArgumentParser(description='Visualization of dataset')
+    # parser.add_argument('train_path',
+    #                     type=str,
+    #                     help='enter path to the train data')
+    parser.add_argument('valid_path',
+                        type=str,
+                        help='enter path to the valid data')
+    args = parser.parse_args()
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 
-    def get_train_transform():
-        return A.Compose([
-            A.Resize(416, 416),
-            A.CenterCrop(width=256, height=256, p=1),
-            A.Flip(0.5),
-            # A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-            ToTensorV2(p=1.0)
-        ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
+    # def get_train_transform():
+    #     return A.Compose([
+    #         A.Resize(416, 416),
+    #         A.CenterCrop(width=256, height=256, p=1),
+    #         A.Flip(0.5),
+    #         # A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+    #         ToTensorV2(p=1.0)
+    #     ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
 
 
     def get_valid_transform():
@@ -34,15 +41,15 @@ if __name__ == '__main__':
         ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
 
 
-    trainDataset = CatDogsDataset(train_path, get_train_transform())
-    validDataset = CatDogsDataset(valid_path, get_valid_transform())
-    train_data_loader = DataLoader(
-        trainDataset,
-        batch_size=16,
-        shuffle=False,
-        num_workers=4,
-        collate_fn=collate_fn
-    )
+    # trainDataset = CatDogsDataset(args.train_path, get_train_transform())
+    validDataset = CatDogsDataset(args.valid_path, get_valid_transform())
+    # train_data_loader = DataLoader(
+    #     trainDataset,
+    #     batch_size=16,
+    #     shuffle=False,
+    #     num_workers=4,
+    #     collate_fn=collate_fn
+    # )
     valid_data_loader = DataLoader(
         validDataset,
         batch_size=16,
@@ -53,8 +60,6 @@ if __name__ == '__main__':
 
     # Check our dataset
     images, targets, image_ids = next(iter(valid_data_loader))
-    # print(f'images:{images}')
-    # print(f'targets:{targets}')
     images = list(image.to(device) for image in images)
     targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
     print(targets)

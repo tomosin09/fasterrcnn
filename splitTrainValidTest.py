@@ -1,6 +1,7 @@
 import shutil
 import os
 from os.path import basename, splitext
+import argparse
 
 
 class TrainValidTestSplit(object):
@@ -126,6 +127,7 @@ class TrainValidTestSplit(object):
 
 
 if __name__ == '__main__':
+    
     A = TrainValidTestSplit(r'C:\Users\Andrey Ilyin\Desktop\please_god_help_me\dataset')
     A.getDataset()
     A.getValid()
