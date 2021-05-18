@@ -127,12 +127,22 @@ class TrainValidTestSplit(object):
 
 
 if __name__ == '__main__':
-
-    A = TrainValidTestSplit(r'C:\Users\Andrey Ilyin\Desktop\please_god_help_me\dataset')
+    parser = argparse.ArgumentParser(description='Сreate directories containing train, valid, test')
+    parser.add_argument('dataset',
+                        type=str,
+                        help='enter path to the dataset with images and annotations')
+    parser.add_argument('train_path',
+                        type=str,
+                        help='enter path to the train data')
+    parser.add_argument('valid_path',
+                        type=str,
+                        help='enter path to the valid data')
+    parser.add_argument('test_path',
+                        type=str,
+                        help='enter path to the test data')
+    args = parser.parse_args()
+    A = TrainValidTestSplit(args.dataset)
     A.getDataset()
     A.getValid()
     A.getTest()
-    path_train = r'C:\Users\Andrey Ilyin\Desktop\please_god_help_me\train'
-    path_valid = r'C:\Users\Andrey Ilyin\Desktop\please_god_help_me\valid'
-    path_test = r'C:\Users\Andrey Ilyin\Desktop\please_god_help_me\test'
-    A.createTrainValidTest(path_train, path_valid, path_test)
+    A.createTrainValidTest(args.train_path, args.valid_path, args.test_path)
