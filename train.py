@@ -13,6 +13,7 @@ from torchvision.models.detection.rpn import AnchorGenerator
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.data.sampler import SequentialSampler
 from dataset import CatDogsDataset
+from tqdm import tqdm
 
 
 class Averager:
@@ -57,20 +58,9 @@ def get_valid_transform():
 
 
 if __name__ == '__main__':
-    # Create the model
-    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
 
     train_path = r'C:\Users\Andrey Ilyin\Desktop\fasterrcnn\train'
     valid_path = r'C:\Users\Andrey Ilyin\Desktop\fasterrcnn\valid'
-
-    # Cats and dogs
-    num_classes = 2
-
-    # get number of input features for the classifier
-    in_features = model.roi_heads.box_predictor.cls_score.in_features
-
-    # replace the pre-trained head with a new one
-    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
     train_dataset = CatDogsDataset(train_path, get_train_transform())
     valid_dataset = CatDogsDataset(valid_path, get_valid_transform())
@@ -86,12 +76,19 @@ if __name__ == '__main__':
                                    num_workers=4,
                                    collate_fn=collate_fn)
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-
+    num_epochs = 50
+    num_classes = 3
+    # Create the model
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+    # get number of input features for the classifier
+    in_features = model.roi_heads.box_predictor.cls_score.in_features
+    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
     model.to(device)
+    # replace the pre-trained head with a new one
     params = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.SGD(params, lr=0.005, momentum=0.9, weight_decay=0.0005)
     lr_scheduler = None
-    num_epochs = 50
+
     loss_hist = Averager()
     itr = 1
 

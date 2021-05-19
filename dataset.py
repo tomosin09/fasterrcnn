@@ -43,14 +43,15 @@ class CatDogsDataset(object):
         area = torch.as_tensor(area, dtype=torch.float32)
         iscrowd = torch.zeros((len(ann_path)), dtype=torch.int64)
         # print(f'boxes: {boxes}')
-        # print(f'labels: {labels}')
+
         # print(f'file_name: {ann_path}')
         target = {}
         target['boxes'] = boxes
-        target['labels'] = labels
+        target['labels'] = labels[0]
         target['image_id'] = torch.tensor([index])
         target['area'] = area
-        target['iscrowd'] = iscrowd
+        # # target['iscrowd'] = iscrowd
+        # print(f'labels: {target["labels"]}')
         if self.transforms:
             sample = {
                 'image': img,

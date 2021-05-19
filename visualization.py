@@ -60,6 +60,7 @@ if __name__ == '__main__':
 
     # Check our dataset
     images, targets, image_ids = next(iter(valid_data_loader))
+    print(targets)
     images = list(image.to(device) for image in images)
     targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
     print(targets)
